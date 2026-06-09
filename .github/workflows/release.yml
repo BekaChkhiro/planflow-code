@@ -1,0 +1,66 @@
+name: release
+
+# Build the desktop app for macOS (Apple Silicon) and Windows (x64) and attach
+# the installers + updater manifest (latest.json) to a GitHub Release.
+# Trigger by pushing a tag like `v0.1.1`, or run manually from the Actions tab.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write # tauri-action creates the GitHub Release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: "--target aarch64-apple-darwin"
+            rust-target: aarch64-apple-darwin
+          - platform: windows-latest
+            args: ""
+            rust-target: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Ad-hoc sign the macOS app (no paid cert): turns the "app is damaged"
+          # block into the milder "unidentified developer" (right-click → Open).
+          # Ignored on Windows.
+          APPLE_SIGNING_IDENTITY: "-"
+          # Updater signing — signs the .app.tar.gz / NSIS artifacts so the
+          # in-app auto-updater trusts them, and emits latest.json.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "PlanFlow ${{ github.ref_name }}"
+          releaseBody: "Desktop builds for macOS (Apple Silicon) and Windows (x64). The app auto-updates itself."
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

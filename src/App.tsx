@@ -4,6 +4,7 @@ import Home from "./screens/Home";
 import Workspace from "./screens/Workspace";
 import Settings from "./screens/Settings";
 import { projects, activeProjectId, isOnboardingDone } from "./stores/projects";
+import { UpdateBanner } from "./components/UpdateBanner";
 
 type Screen = "welcome" | "home" | "workspace" | "settings";
 
@@ -45,7 +46,8 @@ const App: Component = () => {
   });
 
   return (
-    <Switch>
+    <>
+      <Switch>
       <Match when={screen() === "welcome"}>
         <Welcome onOpen={handleWelcomeOpen} />
       </Match>
@@ -74,7 +76,9 @@ const App: Component = () => {
       <Match when={screen() === "settings"}>
         <Settings onBack={handleSettingsBack} />
       </Match>
-    </Switch>
+      </Switch>
+      <UpdateBanner />
+    </>
   );
 };
 

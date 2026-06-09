@@ -1,6 +1,6 @@
 [package]
 name = "planflow"
-version = "0.1.0"
+version = "0.1.1"
 description = "PlanFlow — one window for every coding agent."
 authors = ["PlanFlow maintainers"]
 edition = "2021"
@@ -19,6 +19,9 @@ workstation-core = { path = "../crates/workstation-core" }
 tauri = { version = "=2.11.0", features = ["devtools"] }
 tauri-plugin-opener = "=2.5.3"
 tauri-plugin-dialog = "=2.7.1"
+# In-app auto-update (checks GitHub Releases latest.json, downloads + relaunches).
+tauri-plugin-updater = "=2.9.0"
+tauri-plugin-process = "2"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
