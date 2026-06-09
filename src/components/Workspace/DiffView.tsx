@@ -69,7 +69,7 @@ export function DiffView(props: {
       }
     >
       <div class="flex min-h-0 flex-1 flex-col">
-        <div class="border-b border-ink-800 px-2 py-2">
+        <div class="max-h-[45%] shrink-0 overflow-y-auto border-b border-ink-800 px-2 py-2">
           <For each={props.gitFiles}>
             {(ff, i) => (
               <button
