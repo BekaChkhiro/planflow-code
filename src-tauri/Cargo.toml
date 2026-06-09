@@ -1,0 +1,53 @@
+[package]
+name = "planflow"
+version = "0.1.0"
+description = "PlanFlow — one window for every coding agent."
+authors = ["PlanFlow maintainers"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "planflow_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.6.0", features = [] }
+
+[dependencies]
+workstation-core = { path = "../crates/workstation-core" }
+
+tauri = { version = "=2.11.0", features = ["devtools"] }
+tauri-plugin-opener = "=2.5.3"
+tauri-plugin-dialog = "=2.7.1"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+
+tracing = "=0.1.44"
+tracing-subscriber = { version = "=0.3.20", features = ["env-filter", "fmt"] }
+tracing-appender = "=0.2.3"
+dirs = "=6.0.0"
+
+# PTY runtime + agent/git child processes.
+portable-pty = "=0.9.0"
+tokio = { version = "=1.52.1", features = ["full"] }
+bytes = "=1.11.1"
+uuid = { version = "=1.23.1", features = ["v4", "serde"] }
+thiserror = "=2.0.18"
+
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.186"
+
+[dev-dependencies]
+tempfile = "=3.13.0"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+needless_pass_by_value = "allow"
+return_self_not_must_use = "allow"

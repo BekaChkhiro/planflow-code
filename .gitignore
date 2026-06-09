@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Node / pnpm
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Rust / Tauri (future)
+target/
+**/*.rs.bk
+src-tauri/target/
+
+# Logs
+*.log
+logs/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.claude/
+.planflow/
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.pem
+.cache/
+.planflow/worktrees.json
+.vercel

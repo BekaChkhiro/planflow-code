@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ * PlanFlow design tokens — the single source of truth.
+ *
+ * Recreates, as a Tailwind v4 @theme, the exact theme the published
+ * design viewer (design.planflow.tools) injects into each artboard:
+ *   - brand  = warm ivory primary   (from the design's tokens.json)
+ *   - accent = cool steel blue       (from the design's tokens.json)
+ *   - ink    = cool-neutral canvas   (from the design's tokens.json)
+ *   - success / warning / danger / info = Emerald / Amber / Rose / Sky
+ *     (the semantic defaults from planflow-design-cloud/src/tokens.ts)
+ *   - radius field/btn = 0.625rem, card = 1rem, pill = full
+ *   - shadow card / pop / float
+ *   - font sans = Geist, mono = Geist Mono
+ *
+ * Every screen is pure Tailwind utilities against these — no per-
+ * component CSS. Re-theming the whole app = editing the values here.
+ * ------------------------------------------------------------------ */
+
+@theme {
+  /* fonts */
+  --font-sans: "Geist", "Inter", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* brand — warm ivory (primary) */
+  --color-brand-50: #faf9f6;
+  --color-brand-100: #f2efe8;
+  --color-brand-200: #e6ddcf;
+  --color-brand-300: #d3c6ac;
+  --color-brand-400: #bca983;
+  --color-brand-500: #a78f63;
+  --color-brand-600: #8a7350;
+  --color-brand-700: #695742;
+  --color-brand-800: #473c2e;
+  --color-brand-900: #29231b;
+  --color-brand-950: #17140f;
+
+  /* accent — cool steel blue */
+  --color-accent-50: #f0f4f8;
+  --color-accent-100: #dde7f0;
+  --color-accent-200: #c0d1e2;
+  --color-accent-300: #98b1cd;
+  --color-accent-400: #6b8bb1;
+  --color-accent-500: #4d6d95;
+  --color-accent-600: #3c5578;
+  --color-accent-700: #334761;
+  --color-accent-800: #2c3a4f;
+  --color-accent-900: #1d2734;
+  --color-accent-950: #131a24;
+
+  /* ink — cool-neutral canvas */
+  --color-ink-50: #f7f8f9;
+  --color-ink-100: #eef0f2;
+  --color-ink-200: #dde0e4;
+  --color-ink-300: #bbbfc7;
+  --color-ink-400: #888d97;
+  --color-ink-500: #5e636d;
+  --color-ink-600: #454953;
+  --color-ink-700: #32353d;
+  --color-ink-800: #202228;
+  --color-ink-900: #141519;
+  --color-ink-950: #0b0c0e;
+
+  /* success — Emerald */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+  --color-success-950: #022c22;
+
+  /* warning — Amber */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  /* danger — Rose */
+  --color-danger-50: #fff1f2;
+  --color-danger-100: #ffe4e6;
+  --color-danger-200: #fecdd3;
+  --color-danger-300: #fda4af;
+  --color-danger-400: #fb7185;
+  --color-danger-500: #f43f5e;
+  --color-danger-600: #e11d48;
+  --color-danger-700: #be123c;
+  --color-danger-800: #9f1239;
+  --color-danger-900: #881337;
+  --color-danger-950: #4c0519;
+
+  /* info — Sky */
+  --color-info-50: #f0f9ff;
+  --color-info-100: #e0f2fe;
+  --color-info-200: #bae6fd;
+  --color-info-300: #7dd3fc;
+  --color-info-400: #38bdf8;
+  --color-info-500: #0ea5e9;
+  --color-info-600: #0284c7;
+  --color-info-700: #0369a1;
+  --color-info-800: #075985;
+  --color-info-900: #0c4a6e;
+  --color-info-950: #082f49;
+
+  /* radius */
+  --radius-field: 0.625rem;
+  --radius-btn: 0.625rem;
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+
+  /* elevation */
+  --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.08);
+  --shadow-pop: 0 10px 30px -10px rgb(15 23 42 / 0.25);
+  --shadow-float: 0 24px 60px -20px rgb(15 23 42 / 0.35);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0a0a0b;
+  color: var(--color-ink-200);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------------ *
+ * Agent message prose — scoped typography for `renderAgentMarkdown`
+ * output (innerHTML). Tuned to the codex-style dark surface: tight,
+ * monospace-accented, color reserved for code / links.
+ * ------------------------------------------------------------------ */
+.agent-md {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-ink-300);
+  word-break: break-word;
+}
+.agent-md > * + * {
+  margin-top: 0.7em;
+}
+.agent-md p {
+  margin: 0;
+}
+.agent-md h1,
+.agent-md h2,
+.agent-md h3 {
+  margin: 1.1em 0 0.2em;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--color-ink-100);
+}
+.agent-md h1 {
+  font-size: 1.15rem;
+}
+.agent-md h2 {
+  font-size: 1.02rem;
+}
+.agent-md h3 {
+  font-size: 0.92rem;
+}
+.agent-md strong {
+  color: var(--color-ink-100);
+  font-weight: 600;
+}
+.agent-md em {
+  font-style: italic;
+}
+.agent-md a {
+  color: var(--color-accent-300);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in oklab, var(--color-accent-300) 45%, transparent);
+}
+.agent-md a:hover {
+  color: var(--color-accent-200);
+}
+.agent-md ul,
+.agent-md ol {
+  margin: 0;
+  padding-left: 1.35em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+.agent-md ul {
+  list-style: disc;
+}
+.agent-md ol {
+  list-style: decimal;
+}
+.agent-md li::marker {
+  color: var(--color-ink-600);
+}
+.agent-md blockquote {
+  margin: 0;
+  padding: 0.1em 0 0.1em 0.9em;
+  border-left: 2px solid var(--color-ink-700);
+  color: var(--color-ink-400);
+}
+.agent-md hr {
+  border: 0;
+  border-top: 1px solid var(--color-ink-800);
+  margin: 1em 0;
+}
+/* inline code */
+.agent-md code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--color-ink-800);
+  color: var(--color-ink-100);
+  padding: 0.12em 0.4em;
+  border-radius: 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--color-ink-700) 60%, transparent);
+  overflow-wrap: anywhere;
+}
+/* fenced code block */
+.agent-md pre {
+  position: relative;
+  margin: 0;
+  background: var(--color-ink-950);
+  border: 1px solid var(--color-ink-800);
+  border-radius: var(--radius-field);
+  padding: 0.75rem 0.85rem;
+  overflow-x: auto;
+}
+.agent-md pre code {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--color-ink-200);
+  /* Wrap long lines instead of scrolling the block horizontally. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.agent-md .agent-code-lang {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-600);
+  user-select: none;
+}
+/* tables */
+.agent-md .agent-table {
+  overflow-x: auto;
+  border: 1px solid var(--color-ink-800);
+  border-radius: var(--radius-field);
+}
+.agent-md table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.agent-md thead {
+  background: var(--color-ink-900);
+}
+.agent-md th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-ink-200);
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--color-ink-800);
+  white-space: nowrap;
+}
+.agent-md td {
+  padding: 0.45rem 0.7rem;
+  color: var(--color-ink-300);
+  border-bottom: 1px solid var(--color-ink-800);
+  vertical-align: top;
+}
+.agent-md tbody tr:last-child td {
+  border-bottom: 0;
+}
+.agent-md th + th,
+.agent-md td + td {
+  border-left: 1px solid var(--color-ink-800);
+}
