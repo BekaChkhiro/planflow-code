@@ -272,7 +272,12 @@ export function acquireAgentSession(sessionId: string, opts: AgentSessionOptions
 
     const keyToItem = new Map<string, { itemId: string; kind: "text" | "tool"; json: string }>();
     const indexToKey = new Map<number, string>();
-    let currentMsgId = "";
+    // Monotonic block counter — guarantees every streamed content block gets a
+    // globally-unique slot key, so a repeated/stale message id can never make a
+    // new assistant turn overwrite an earlier one's text (the "writes at the
+    // top" bug). `indexToKey` (cleared per message_start) dedupes re-fired
+    // content_block_start events within the same message.
+    let blockSeq = 0;
 
     const mutateItem = <K extends Item["kind"]>(
       itemId: string,
@@ -298,7 +303,8 @@ export function acquireAgentSession(sessionId: string, opts: AgentSessionOptions
       const index = typeof ev.index === "number" ? ev.index : -1;
 
       if (etype === "message_start") {
-        currentMsgId = asString(asRecord(ev.message).id);
+        // New message → its block indices start fresh; force new slots so a
+        // continuation never reuses the previous message's text item.
         indexToKey.clear();
         setBusy(true);
         return;
@@ -307,16 +313,21 @@ export function acquireAgentSession(sessionId: string, opts: AgentSessionOptions
         const block = asRecord(ev.content_block);
         const blockType = asString(block.type);
         if (blockType === "text") {
-          const key = `${currentMsgId}#${index}`;
-          if (!keyToItem.has(key)) {
+          // Reuse the slot only if this same block index was already started
+          // in the CURRENT message (re-fired event); otherwise mint a fresh,
+          // globally-unique slot so a new message always appends a new item.
+          const existing = indexToKey.get(index);
+          if (existing === undefined || !keyToItem.has(existing)) {
+            blockSeq += 1;
+            const key = `b${blockSeq}`;
             const id = nextId();
             pushItem({ kind: "assistant", id, text: "" });
             keyToItem.set(key, { itemId: id, kind: "text", json: "" });
+            indexToKey.set(index, key);
           }
-          indexToKey.set(index, key);
         } else if (blockType === "tool_use") {
           const tid = asString(block.id);
-          const key = tid || `${currentMsgId}#t${index}`;
+          const key = tid || `b${(blockSeq += 1)}`;
           if (!keyToItem.has(key)) {
             const id = tid || nextId();
             pushItem({
@@ -531,7 +542,7 @@ export function acquireAgentSession(sessionId: string, opts: AgentSessionOptions
     const spawn = (): void => {
       keyToItem.clear();
       indexToKey.clear();
-      currentMsgId = "";
+      blockSeq = 0;
       setClosed(false);
       setBusy(false);
       setModel(null);
