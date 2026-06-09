@@ -49,19 +49,28 @@ export function AgentBubble(props: { item: Item }): JSX.Element {
       </Match>
       <Match when={props.item.kind === "assistant" && props.item}>
         {(item) => {
-          let el!: HTMLDivElement;
+          const text = () => (item() as { kind: "assistant"; text: string }).text;
+          let el: HTMLDivElement | undefined;
           createEffect(() => {
-            const html = renderAgentMarkdown((item() as { kind: "assistant"; text: string }).text);
+            const html = renderAgentMarkdown(text());
             if (el) el.innerHTML = html;
           });
+          // Skip empty assistant blocks (thinking-only / empty text turns) so
+          // they don't render a bare avatar + blank gap. Reactively appears
+          // once the streamed text arrives.
           return (
-            <div class="flex gap-3">
-              <AgentAvatar />
-              <div
-                ref={el}
-                class="agent-md min-w-0 flex-1 pt-0.5 text-sm leading-relaxed text-ink-300"
-              />
-            </div>
+            <Show when={text().trim().length > 0}>
+              <div class="flex gap-3">
+                <AgentAvatar />
+                <div
+                  ref={(node) => {
+                    el = node;
+                    node.innerHTML = renderAgentMarkdown(text());
+                  }}
+                  class="agent-md min-w-0 flex-1 pt-0.5 text-sm leading-relaxed text-ink-300"
+                />
+              </div>
+            </Show>
           );
         }}
       </Match>

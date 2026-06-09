@@ -1,6 +1,6 @@
 {
   "name": "planflow",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "PlanFlow — one window for every coding agent.",
   "private": true,
   "type": "module",
