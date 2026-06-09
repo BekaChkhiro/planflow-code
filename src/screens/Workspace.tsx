@@ -123,15 +123,29 @@ export default function Workspace(props: WorkspaceProps): JSX.Element {
 
 
   // ── Git status ─────────────────────────────────────────────────────
+  const clearGitState = (): void => {
+    setGitBranch("—");
+    setGitFiles([]);
+    setSelectedFileIdx(0);
+    setFileDiff("");
+  };
+
   const refreshGitStatus = async (): Promise<void> => {
+    // Snapshot the path we're fetching for, so a result that resolves after
+    // the user switched projects can't clobber the new project's state.
+    const path = props.project.path;
     try {
-      const status = await gitStatus(props.project.path);
+      const status = await gitStatus(path);
+      if (props.project.path !== path) return; // project changed mid-flight
       setGitBranch(status.branch || "—");
       setGitFiles(status.files);
       setSelectedFileIdx(0);
       setFileDiff("");
     } catch {
-      /* git unavailable — leave current state */
+      // Not a git repo / git error — clear so we never show another
+      // project's stale diff (the bug where Sunrise's changes leaked into
+      // an unrelated project).
+      if (props.project.path === path) clearGitState();
     }
   };
 
@@ -139,10 +153,14 @@ export default function Workspace(props: WorkspaceProps): JSX.Element {
     void refreshGitStatus();
   });
 
-  // Re-fetch git status when project changes
+  // Re-fetch git status when project changes — clear immediately so the
+  // previous project's diff never lingers during the async fetch.
   createEffect((prev: string | undefined) => {
     const path = props.project.path;
-    if (prev !== undefined && prev !== path) void refreshGitStatus();
+    if (prev !== undefined && prev !== path) {
+      clearGitState();
+      void refreshGitStatus();
+    }
     return path;
   });
 
