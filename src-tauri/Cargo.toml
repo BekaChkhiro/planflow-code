@@ -1,6 +1,6 @@
 [package]
 name = "planflow"
-version = "0.1.1"
+version = "0.1.2"
 description = "PlanFlow — one window for every coding agent."
 authors = ["PlanFlow maintainers"]
 edition = "2021"
@@ -20,7 +20,9 @@ tauri = { version = "=2.11.0", features = ["devtools"] }
 tauri-plugin-opener = "=2.5.3"
 tauri-plugin-dialog = "=2.7.1"
 # In-app auto-update (checks GitHub Releases latest.json, downloads + relaunches).
-tauri-plugin-updater = "=2.9.0"
+# Unpinned to track the same 2.x minor as the @tauri-apps/plugin-updater npm pkg
+# (tauri-action enforces matching major/minor between the crate and the JS pkg).
+tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 
 serde = { version = "1", features = ["derive"] }
